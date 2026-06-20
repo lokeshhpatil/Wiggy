@@ -9,6 +9,6 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 export const Oauth = new google.auth.OAuth2(
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
-  "Message: Oauth"
+  "postmessage"
   // GOOGLE_REDIRECT_URI,
 )

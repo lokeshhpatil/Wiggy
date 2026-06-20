@@ -11,9 +11,9 @@ import { CookieOptions } from "express";
 
   const options: CookieOptions = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 15 * 60 * 1000,
-    sameSite:"strict"
+    sameSite: "none",
   }
 
 export const userLogin = asyncHandler(async (req, res) => {
@@ -48,7 +48,7 @@ export const userLogin = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, options)
     .json(
-      new ApiResponse(200, {user: safeUser, accessToken}, "login successful.")
+      new ApiResponse(200, {user: safeUser, token: accessToken}, "login successful.")
     )
 });
 
@@ -90,7 +90,7 @@ export const googleLogin = asyncHandler(async(req, res) => {
   .cookie("accessToken", accessToken, options)
   .json(new ApiResponse(
     200,
-    {data: safeUser, accessToken},
+    {user: safeUser, token: accessToken},
     "Google login successful"
   ));
 

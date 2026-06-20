@@ -24,13 +24,13 @@ const userSchema: Schema<IUser> = new Schema({
   },
   image: {
     type: String,
-    required: true,
+    required: false,
   },
   role: {
     type: String,
     enum: ["user", "admin", "restaurant", "rider"],
     required: true,
-    default: null,
+    default: "user",
   },
   password: {
     type: String,
@@ -39,7 +39,7 @@ const userSchema: Schema<IUser> = new Schema({
   },
   provider: {
     type: String,
-    enum: ["local", "googel"],
+    enum: ["local", "google"],
     default:"user",
   },
   refreshToken: {
