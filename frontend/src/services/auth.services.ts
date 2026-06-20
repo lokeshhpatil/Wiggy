@@ -1,12 +1,15 @@
 import axios from "axios";
-import type { GoogleAuthPayload } from "../types/auth";
+import type { GoogleAuthPayload, AuthResponse, ApiResponse } from "../types/auth";
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || '';
+const API_BASE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || "";
 
-export const loginWithGoogle = async(payload: GoogleAuthPayload) => {
-  const googleResponse = await axios.post(
+export const loginWithGoogle = async (payload: GoogleAuthPayload) => {
+  const googleResponse = await axios.post<ApiResponse<AuthResponse>>(
     `${API_BASE_URL}/api/v0/auth/login-google`,
-    payload
+    payload,
+    { withCredentials: true },
   );
-  return googleResponse.data;
-}
+  console.log("googleResponse.data -> ", googleResponse.data);
+  return googleResponse.data.data;
+};
+
