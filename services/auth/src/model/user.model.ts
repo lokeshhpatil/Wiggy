@@ -3,44 +3,45 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IUser extends Document {
   name: string;
   email: string;
-  image: string;
-  role: "user" | "restaurant" | "rider" | "admin";
-  password: string;
-  provider: string,
-  refreshToken:string;
+  image?: string;
+  role: "user" | "restaurant" | "rider" | "admin" | null;
+  password?: string;
+  provider: "local" | "google",
+  refreshToken?:string;
 }
 
 const userSchema: Schema<IUser> = new Schema({
   name: {
     type: String,
     required: true,
+    trim: true
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    index: true,
+    trim: true,
     lowercase: true,
   },
   image: {
     type: String,
     required: false,
+    default: "https://thf.bing.com/th/id/OIP.OcQwsWoGzsWeTRcMnP7E2QHaHa?w=199&h=199&c=7&r=0&o=7&cb=thfc1falcon2&dpr=1.3&pid=1.7&rm=3"
   },
   role: {
     type: String,
-    enum: ["user", "admin", "restaurant", "rider"],
-    required: true,
-    default: "user",
+    enum: ["user", "admin", "restaurant", "rider", null],
+    default: null,
   },
   password: {
     type: String,
     select: false,
-    default: "local",
   },
   provider: {
     type: String,
     enum: ["local", "google"],
-    default:"user",
+    default: "local",
+    required: true,
   },
   refreshToken: {
     type: String

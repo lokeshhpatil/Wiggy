@@ -22,7 +22,7 @@ try {
   }
   console.log("Decoded Token -> ",decodedToken);
   
-  const user = await User.findById(decodedToken._id).select("_id role").lean();
+  const user = await User.findById(decodedToken._id).select("_id role name email").lean();
   if(!user){
     throw new ApiError(401, "Unauthorized access: Invalid token or user deleted")
   }
@@ -30,6 +30,8 @@ try {
   req.user = {
     _id: user._id.toString(),
     role: user.role as "user" | "restaurant" | "rider",
+    name: user.name,
+    email: user.email,
   };
   next();
   
