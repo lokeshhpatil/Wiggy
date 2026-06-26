@@ -2,24 +2,28 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import { Toaster } from "react-hot-toast";
-import { GoogleOAuthProvider } from "@react-oauth/google";
+import PublicRoute from "./Routes/PublicRoute";
+import ProtectedRoute from "./Routes/ProtectedRoute";
+import SelectRole from "./pages/SelectRole";
+import Navbar from "./components/Navbar";
+import Profile from "./pages/Profile";
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-if (!GOOGLE_CLIENT_ID) {
-  throw new Error("Missing VITE_GOOGLE_CLIENT_ID environment variable");
-}
 const App = () => (
   <>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route element={<PublicRoute />}>
           <Route path="/login" element={<LoginPage />} />
-        </Routes>
-        <Toaster />
-      </BrowserRouter>
-    </GoogleOAuthProvider>
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/select-role" element={<SelectRole />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
+      </Routes>
+      <Toaster />
+    </BrowserRouter>
   </>
 );
-
 export default App;
