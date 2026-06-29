@@ -1,6 +1,5 @@
 import axios from "axios";
-import type { GoogleAuthPayload, AuthResponse, ApiResponse } from "../types/auth";
-// import { getToken } from "../utils/storage";
+import type { GoogleAuthPayload, AuthResponse, ApiResponse, Role, UpdateRoleResponse } from "../types/auth";
 import { baseUrl } from '../config';
 
 const API_BASE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || baseUrl;
@@ -15,24 +14,15 @@ export const loginWithGoogle = async (payload: GoogleAuthPayload) => {
   return googleResponse.data.data;
 };
 
-export const updateUserRole = async (role: string) => {
-  const response = await apiClient.put<ApiResponse<{ updatedRole: unknown; token: string }>>(
-    "/api/v0/auth/add-role",
+export const updateUserRole = async (role: Role):Promise<UpdateRoleResponse> => {
+  const response = await apiClient.put<ApiResponse<UpdateRoleResponse>>(
+    "/api/v0/auth/role",
     { role },
   );
   return response.data.data;
 };
 
 export const apiClient = axios.create({
-  baseURL: baseUrl,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
-
-// apiClient.interceptors.request.use((config) => {
-//   const token = getToken();
-//   if (token) {
-//     config.headers = config.headers ?? {};
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });

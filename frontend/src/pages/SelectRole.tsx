@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { updateUserRole } from "../services/auth.services";
 import { UseAppData } from "../context/AppContext";
-
-type Role = "user" | "restaurant" | "rider" | "admin";
+import type { Role } from "../types/auth";
 
 const SelectRole = () => {
   const allowedRoles: Role[] = ["user", "restaurant", "rider", "admin"];
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
   const navigate = useNavigate();
@@ -23,20 +23,28 @@ const SelectRole = () => {
       throw error;
     }
   };
-
   const handleSubmit = async () => {
-    if (!selectedRole) return;
+    if (!selectedRole || loading) return;
 
+    setLoading(true);
+    setError(null);
     try {
       const data = await addRole(selectedRole);
+      console.log("setUser(data.updatedRole);", data.updatedRole.role);
       if (data?.updatedRole) {
-        setUser((prevUser) =>
-          prevUser ? { ...prevUser, role: selectedRole } : prevUser,
-        );
+        setUser((prevUser) => ({
+          ...prevUser,
+          ...data.updatedRole,
+          role: data.updatedRole.role,
+        }));
       }
       navigate("/");
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to update role. Please try again.";
+      setError(message);
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,13 +82,15 @@ const SelectRole = () => {
           ))}
         </div>
 
+        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+
         {selectedRole && (
           <button
             type="button"
             onClick={handleSubmit}
             className="mt-8 w-full rounded-xl bg-blue-600 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
           >
-            Continue
+            {loading ? "Saving..." : "Continue"}
           </button>
         )}
       </div>

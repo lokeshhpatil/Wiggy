@@ -1,3 +1,5 @@
+export type Role = "user" | "restaurant" | "rider" | "admin";
+
 export interface GoogleAuthPayload {
   code: string
 }
@@ -40,4 +42,38 @@ export interface AppContextType {
   // error: boolean,
   // setLocation: string,
   // setError: React.Dispatch<React.SetStateAction<boolean  | false>>
+}
+
+export interface UserData {
+  _id: string;
+  name: string;
+  email: string;
+  role: Role;
+  provider: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+}
+
+export interface UpdateRoleResponse {
+  updatedRole: UserData;
+  token: string;
+}
+
+export interface RestaurantType {
+    name: string;
+  description?: string;
+  image: string;
+  ownerID: string;
+  phone: number;
+  isVerified: boolean;
+
+  autoLocation: {
+    type: "Point",
+    coordinates: [number, number], //longtitude latitude
+    formattedAddress: string;
+  };
+  
+  isOpen: boolean;
+  createdAt: Date;
 }

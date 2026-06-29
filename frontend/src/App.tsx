@@ -7,23 +7,37 @@ import ProtectedRoute from "./Routes/ProtectedRoute";
 import SelectRole from "./pages/SelectRole";
 import Navbar from "./components/Navbar";
 import Profile from "./pages/Profile";
+// import { UseAppData } from "./context/AppContext";
+import Restaurant from "./pages/Restaurant";
 
-const App = () => (
-  <>
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<LoginPage />} />
-        </Route>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/select-role" element={<SelectRole />} />
-          <Route path="/profile" element={<Profile />} />
-        </Route>
-      </Routes>
-      <Toaster />
-    </BrowserRouter>
-  </>
-);
+const App = () => {
+  // const { user } = UseAppData();
+
+  // if (user && user.role === "restaurant") {
+  //   return(
+
+  //   )
+  // }
+
+  return (
+    <>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/select-role" element={<SelectRole />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/restaurant" element={<Restaurant />} />
+          </Route>
+        </Routes>
+        <Toaster />
+      </BrowserRouter>
+    </>
+  );
+};
+
 export default App;

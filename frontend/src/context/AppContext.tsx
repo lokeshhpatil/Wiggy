@@ -28,7 +28,6 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     const fetchUserProfile = async () => {
       try {
         const { data } = await apiClient.get("/api/v0/auth/profile");
-        console.log("User profile data -> ", data);
         setUser(data.data);
         setIsAuth(true);
         setError(null);
@@ -37,7 +36,6 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         setIsAuth(false);
         setUser(null);
         if (axios.isAxiosError(error)) {
-          // Inside this block, TypeScript now guarantees 'error' has properties like 'response' and 'status'
           if (error.response?.status === 401) {
             setError(null);
           } else if (!error.response) {
@@ -45,18 +43,14 @@ export const AppProvider = ({ children }: AppProviderProps) => {
               "Cannot connect to the server. Please check your internet connection.",
             );
           } else {
-            // You can even safely access the backend's specific error message if it exists
             setError(
-              error.response.data?.message ||
+              error.response?.data?.message ||
                 "An unexpected server error occurred.",
             );
           }
         } else if (error instanceof Error) {
-          // Inside this block, TypeScript knows 'error' has a 'message' property
           setError(error.message);
-        }
-        // Step 4: The absolute fallback
-        else {
+        } else {
           setError("An unexpected error occurred while loading your profile.");
         }
       } finally {
@@ -86,12 +80,6 @@ export const AppProvider = ({ children }: AppProviderProps) => {
           longitude,
           formattedAddress: data.display_name || "Address not found",
         });
-        setCity(
-          data.address.city ||
-            data.address.town ||
-            data.address.village ||
-            "City not found",
-        );
         setCity(
           data.address.city ||
             data.address.town ||
