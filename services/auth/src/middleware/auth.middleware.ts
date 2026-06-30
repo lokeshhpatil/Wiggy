@@ -8,34 +8,30 @@ interface JwtPayload {
 }
 
 export const verifyJWT = async(req: Request, res:Response, next:NextFunction):Promise<void> => {
-  const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","");
+  const token = req.cookies?.accessToken;
+
   if(!token){
     throw new ApiError(401, "Unauthorized access: No token provided");
   }
-  console.log("Token from req.cookies -> ", token);
-try {
 
-  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as JwtPayload & { _id: string };  
+  try {
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as JwtPayload & { _id: string };
 
-  if(!decodedToken){
-    throw new ApiError(401, "Unauthorized Access decodedToken not found");
+    if(!decodedToken){
+      throw new ApiError(401, "Unauthorized Access decodedToken not found");
+    }
+
+    const user = await User.findById(decodedToken._id).select("_id role").lean();
+    if(!user){
+      throw new ApiError(401, "Unauthorized access: Invalid token or user deleted");
+    }
+
+    req.user = {
+      _id: user._id.toString(),
+      role: user.role as "user" | "restaurant" | "rider",
+    };
+    next();
+  } catch (error) {
+    throw new ApiError(401, error instanceof Error ? error.message : "Invalid access token");
   }
-  console.log("Decoded Token -> ",decodedToken);
-  
-  const user = await User.findById(decodedToken._id).select("_id role").lean();
-  if(!user){
-    throw new ApiError(401, "Unauthorized access: Invalid token or user deleted")
-  }
-
-  req.user = {
-    _id: user._id.toString(),
-    role: user.role as "user" | "restaurant" | "rider",
-  };
-  next();
-  
-  console.log("req.user from auth.middleware response -> ",req.user)
-} catch (error) {
-  throw new ApiError(401, error instanceof Error ? error.message : "Invalid access token");
-}
-  
 }

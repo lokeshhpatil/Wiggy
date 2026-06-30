@@ -11,9 +11,9 @@ import { CookieOptions } from "express";
 
   const options: CookieOptions = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 15 * 60 * 1000,
-    sameSite:"strict"
+    sameSite: "lax"
   }
 
 export const userLogin = asyncHandler(async (req, res) => {
@@ -33,10 +33,9 @@ export const userLogin = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid Login Credentials");
   }
 
-  const accessToken = generateAccessToken(user._id);
+  const accessToken = generateAccessToken(user._id, user.role);
   // console.log("ACCESS_TOKEN -> ", accessToken);
 
-  
   const safeUser = {
     _id: user._id,
     name: user.name,
@@ -48,7 +47,7 @@ export const userLogin = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, options)
     .json(
-      new ApiResponse(200, {user: safeUser, accessToken}, "login successful.")
+      new ApiResponse(200, {user: safeUser, token: accessToken}, "login successful.")
     )
 });
 
@@ -73,12 +72,12 @@ export const googleLogin = asyncHandler(async(req, res) => {
       name: googleUser.name,
       email: googleUser.email,
       image: googleUser.image,
-      role: "user",
+      role: googleUser.role,
       provider: "google",
     });
   }
 
-  const accessToken = generateAccessToken(user._id);
+  const accessToken = generateAccessToken(user._id, user.role);
   const safeUser = {
     _id: user._id,
     name: user.name,
@@ -90,10 +89,9 @@ export const googleLogin = asyncHandler(async(req, res) => {
   .cookie("accessToken", accessToken, options)
   .json(new ApiResponse(
     200,
-    {data: safeUser, accessToken},
+    {user: safeUser, token: accessToken},
     "Google login successful"
   ));
-
 });
 
 const allowedRoles = ["user", "restaurant", "rider"] as const;
@@ -121,9 +119,10 @@ export const updateUserRole = asyncHandler(async(req, res) => {
   if(!updatedRole){
     throw new ApiError(404, "User not found in the system");
   }
-  const token = generateAccessToken(new Types.ObjectId(req.user._id));
+  const token = generateAccessToken(new Types.ObjectId(req.user._id), updatedRole.role);
   res
   .status(200)
+  .cookie("accessToken", token, options)
   .json(new ApiResponse(200, {updatedRole, token}, "Role updated successfully"))
 });
 

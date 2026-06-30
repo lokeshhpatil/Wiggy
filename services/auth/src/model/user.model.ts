@@ -24,12 +24,10 @@ const userSchema: Schema<IUser> = new Schema({
   },
   image: {
     type: String,
-    required: true,
   },
   role: {
     type: String,
     enum: ["user", "admin", "restaurant", "rider"],
-    required: true,
     default: null,
   },
   password: {
@@ -39,8 +37,8 @@ const userSchema: Schema<IUser> = new Schema({
   },
   provider: {
     type: String,
-    enum: ["local", "googel"],
-    default:"user",
+    enum: ["local", "google"],
+    default:"google",
   },
   refreshToken: {
     type: String

@@ -6,7 +6,7 @@ const router = Router();
 
 router.post("/login",userLogin); //Manual login
 router.post("/login-google", googleLogin); //google login
-router.put("/add/role",verifyJWT,updateUserRole); //Update user
+router.put("/role",verifyJWT,updateUserRole); //Update user
 router.get("/profile", verifyJWT, getProfile); //Fetch user
 
 export default router;
